@@ -1,0 +1,290 @@
+вставить текст можно нажатием на правую кнопку мыши
+
+
+Не экономим на характеристиках сервера!
+
+Характеристики сервера
+Тариф
+HP C4-M6-D20
+Количество ядер vCPU
+4
+Объем памяти RAM
+6 ГБ
+Объем диска
+20 ГБ
+
+
+
+
+
+данные для подключения к удаленной машине
+Логин: root
+Пароль: ocljFgL4zOVchsoh
+
+заходим на сервер
+ssh root@89.104.70.94
+
+
+
+
+
+
+пробуем установить гит
+sudo apt-get install git
+
+если возникла ошибка вбиваем команду
+sudo apt-get update
+
+затем опять пробуем установить гит
+sudo apt-get install git
+
+проверяем что гит установлен
+git –version
+
+
+устанавливаем докер
+копируем и вставляем первую команду:
+
+# Add Docker's official GPG key:
+sudo apt-get update
+sudo apt-get install ca-certificates curl
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+
+# Add the repository to Apt sources:
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt-get update
+
+
+копируем и вставляем вторую команду
+sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+
+если возикла ошибка
+Reading package lists... Done
+Building dependency tree       
+Reading state information... Done
+Package docker-ce is not available, but is referred to by another package.
+This may mean that the package is missing, has been obsoleted, or
+is only available from another source
+
+E: Package 'docker-ce' has no installation candidate
+E: Unable to locate package docker-ce-cli
+E: Unable to locate package containerd.io
+E: Couldn't find any package by glob 'containerd.io'
+E: Couldn't find any package by regex 'containerd.io'
+E: Unable to locate package docker-buildx-plugin
+E: Unable to locate package docker-compose-plugin
+
+
+то
+
+вводим команды по очереди
+
+sudo apt-get update
+
+sudo apt-get install \
+     ca-certificates \
+     curl \
+     gnupg \
+     lsb-release
+
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \
+  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+
+sudo apt-get update
+
+sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+
+!если возникают ошибки или в консоли обрывается на строчке "Do you want to continue? [Y/n] Abort."
+то копируем и вставляем каждую строчку отдельной командой
+
+
+
+
+
+
+
+
+
+
+github actions не будет работать у root пользователя, поэтому нам нужно создать еще одного пользователя в нашем удаленном сервере, воодим команду
+adduser frontend
+
+вводим пароль frontend (при печатании текст не будет отображаться, это нормально)
+вводим еще раз пароль frontend (при печатании текст не будет отображаться, это нормально)
+
+на остальные вопросы
+Full Name []:
+        Room Number []:
+        Work Phone []:
+        Home Phone []:
+        Other []:
+просто нажимаем enter
+
+
+на вопрос "Is the information correct?" нажимаем
+Y
+enter
+
+
+
+переходим на нового пользователя командой
+su - frontend
+
+
+
+возможно это дальше понадобиться, нужно добавить все права админа для нового пользователя frontend
+
+выходим с пользователя frontend командой
+exit
+
+вводим команду
+sudo usermod -aG sudo frontend
+
+
+переходим на пользователя frontend
+su - frontend
+
+
+создаем папку, куда будем устанавливать github runner
+sudo mkdir frontend-github-runner
+
+вводим пароль frontend
+
+переходим в папку frontend-github-runner
+cd frontend-github-runner
+
+
+переходим в браузер на вкладку с репозиторием гитхаба
+переходим в Settings -> Actions -> Runners
+
+нажимаем на кнопку New self-hosted runner
+
+выбираем Runner image: Linux
+Architecture: X64
+
+
+далее отобразились команды для установки runner
+
+# Create a folder
+$ mkdir actions-runner && cd actions-runner
+
+папку мы уже создали, это нам не нужно
+
+потом вводим команду
+curl -o actions-runner-linux-x64-2.321.0.tar.gz -L https://github.com/actions/runner/releases/download/v2.321.0/actions-runner-linux-x64-2.321.0.tar.gz
+
+и получаем ошибку, потомучто в начале команды нужно добавить sudo, в итоге команда будет
+sudo curl -o actions-runner-linux-x64-2.321.0.tar.gz -L https://github.com/actions/runner/releases/download/v2.321.0/actions-runner-linux-x64-2.321.0.tar.gz
+
+
+вводим ls видим zip архивный файл actions-runner-linux-x64-2.321.0.tar.gz, нам нужно его разархивировать, вводим команду
+tar xzf ./actions-runner-linux-x64-2.321.0.tar.gz
+
+опять получаем ошибку, потомучто забыли команду sudo в начале, вводим команду
+sudo tar xzf ./actions-runner-linux-x64-2.321.0.tar.gz
+
+
+вводим команду ls для проверки, видим список файлов и папок
+actions-runner-linux-x64-2.321.0.tar.gz  bin  config.sh  env.sh  externals  run-helper.cmd.template  run-helper.sh.template  run.sh  safe_sleep.sh
+
+
+далее вводим следующую команду из гитхаба (# Create the runner and start the configuration experience)
+по идее эта команда может вызываться только не root пользвателем, собственно поэтому мы в начале и создали нового пользователя frontend
+
+./config.sh --url https://github.com/Nail-Ya/github-ci-cd --token AO3K2Y4N4R72ZOMWYWXST23HLEYO4
+
+
+и получаем ошибку, так как нам нужно добавить пермишены нашему пользователю frontend командой
+sudo chmod -R 777 /frontend-github-runner
+
+эта команда означает что я хочу дать себе все права для этой папки frontend-github-runner, чтобы я мог сделать все что нужно
+
+
+в итоге получаем ошибку
+chmod: cannot access '/frontend-github-runner': No such file or directory
+
+
+переходим на папку в уровень выше
+cd ../
+
+
+повторяем команду
+sudo chmod -R 777 frontend-github-runner
+
+
+заходим обратно в frontend-github-runner
+cd frontend-github-runner
+
+
+опять повторяем команду из гитхаба
+./config.sh --url https://github.com/Nail-Ya/github-ci-cd --token AO3K2Y4N4R72ZOMWYWXST23HLEYO4
+
+
+на вопрос "Enter the name of the runner group to add this runner to" просто нажимаем enter
+
+на вопрос "Enter the name of runner" вводим
+frontend-runner
+
+на вопрос "Enter any additional labels" просто нажимаем enter
+
+на вопрос "Enter name of work folder" просто нажимаем enter
+
+далее нам нужно запустить runner. Для начала вводим команду ls
+
+далее вводим команду
+sudo ./svc.sh install
+
+далее вводим команду
+sudo ./svc.sh start
+
+
+
+далее на странице гитхаба статус у ранера уже зеленый Idle
+
+
+
+
+переходим в редактор кода
+в корне проекта создаем папку .github
+внутри этой папки создаем новую папку workflows
+внутри этой папки создаем файл workflow.yml (название файла может быть любым, главное расширение .yml)
+
+
+
+делаем git push, в actions в логах видим ошибку
+unable to get image 'github-ci-cd-2-frontend': permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.47/images/github-ci-cd-2-frontend/json": dial unix /var/run/docker.sock: connect: permission denied
+
+
+в терминале сервера вводим команду
+sudo usermod -a -G docker frontend
+где frontend - это имя нашего пользователя, который мы создали
+
+
+
+далее находясь в папке /frontend-github-runner вводим команды чтобы перезапустить self-hosted runner service after adding the user
+sudo ./svc.sh stop
+
+sudo ./svc.sh start
+
+
+
+далее обновляем код и делаем git push заново
+
+
+
+
+
+
+заходим на
+http://89.104.70.94:8080/
