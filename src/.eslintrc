@@ -1,0 +1,7 @@
+{
+  "extends": "react-app",
+  "rules": {
+   "no-mixed-operators": 0,
+   "react-hooks/exhaustive-deps": "off"
+  }
+}
