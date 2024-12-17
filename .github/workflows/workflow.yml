@@ -17,4 +17,4 @@ jobs:
           username: root
           password: ${{ secrets.DROPLET_PASSWORD }}
           script: |
-            docker compose up -d
+            docker compose -f docker-compose.yml up -d
